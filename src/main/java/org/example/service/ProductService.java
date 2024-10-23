@@ -1,13 +1,10 @@
 package org.example.service;
 
-import org.example.persistence.model.Product;
-
-import java.util.Optional;
-
 public interface ProductService {
 
-    Optional<Product> findById(Long id);
+    void buyProduct(Long id, int amount);
 
-    Product buyProduct(Long id, int amount);
+    void buyProduct2(Long id, int amount);
+
 
 }

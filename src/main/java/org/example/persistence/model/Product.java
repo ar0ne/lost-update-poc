@@ -24,7 +24,7 @@ public class Product {
 
     private String name;
 
-    // Version field is a good solution which could help to prevent Lost updates
+    // Version field is another solution which could help to prevent Lost updates
     // https://vladmihalcea.com/optimistic-locking-version-property-jpa-hibernate/
     @Version
     private Long version;

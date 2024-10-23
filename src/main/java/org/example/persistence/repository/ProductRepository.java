@@ -4,6 +4,7 @@ import jakarta.persistence.LockModeType;
 import org.example.persistence.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +18,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         select p from Product p where p.id = :id
         """)
     Optional<Product> findByIdWithLock(Long id);
+
+    @Query(value = """
+        update Product set quantity = quantity - :amount
+        where id = :id
+        """, nativeQuery = true)
+    @Modifying
+    void decreaseQuantity(Long id, int amount);
 }

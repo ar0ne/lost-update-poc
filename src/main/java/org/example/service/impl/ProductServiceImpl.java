@@ -19,23 +19,39 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository repository;
 
+    @Transactional
     @Override
-    public Optional<Product> findById(Long id) {
-        return repository.findById(id);
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    @Override
-    public Product buyProduct(Long id, int amount) {
+    public void buyProduct(Long id, int amount) {
         // Select without a lock will fail
 //        Optional<Product> productOpt = repository.findById(id);
-
         Optional<Product> productOpt = repository.findByIdWithLock(id);
         if (productOpt.isEmpty()) {
             throw new RuntimeException("Can't buy this product.");
         }
+        // in this case we could rely on POJO method, because we use Lock
         var product = productOpt.get();
+        if (product.getQuantity() < 0) {
+            throw new RuntimeException(("Out of stoke"));
+        }
         product.decreaseQuantity(amount);
-        return repository.save(product);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Override
+    public void buyProduct2(Long id, int amount) {
+        // in this case all good, because we rely on SQL query for decreasing amount
+        Optional<Product> productOpt = repository.findById(id);
+        if (productOpt.isEmpty()) {
+            throw new RuntimeException("Can't buy this product.");
+        }
+        var product = productOpt.get();
+        if (product.getQuantity() < 0) {
+            throw new RuntimeException(("Out of stoke"));
+        }
+        repository.decreaseQuantity(product.getId(), amount);
+
+        // we can't rely on POJO (or if we need to make few modifying operations without explicit lock
+//        product.decreaseQuantity(amount);
+//        repository.save(product);
     }
 }
