@@ -1,0 +1,24 @@
+spring:
+  datasource:
+#    url: jdbc:h2:mem:test
+#    username: sa
+#    password: sa
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: test
+    password: 12345
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+
+      springframework:
+        transaction:
+          interceptor: TRACE
